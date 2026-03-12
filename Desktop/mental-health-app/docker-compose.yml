@@ -1,0 +1,77 @@
+﻿services:
+  # MongoDB Database
+  mongodb:
+    image: mongo:6
+    container_name: mental-health-mongodb
+    restart: unless-stopped
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: SecurePassword123
+      MONGO_INITDB_DATABASE: mental-health
+    ports:
+      - "27018:27017"  # Host port 27018 maps to container port 27017
+    volumes:
+      - mongodb_data:/data/db
+      - ./mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
+    networks:
+      - mental-health-network
+
+  # Backend API
+  backend:
+    build: ./backend
+    container_name: mental-health-backend
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      PORT: 5000
+      MONGODB_URI: mongodb://admin:SecurePassword123@mongodb:27017/mental-health?authSource=admin  # Fixed: use internal port 27017
+      JWT_SECRET: your-super-secret-jwt-key-change-this-in-production-402857714
+      JWT_EXPIRE: 7d
+      FRONTEND_URL: http://localhost:3000
+      AGORA_APP_ID: e7f6e9aeecf14b2ba10e3f40be9f56e7
+      AGORA_APP_CERTIFICATE: your-agora-certificate-here
+    ports:
+      - "5000:5000"
+    depends_on:
+      - mongodb
+    volumes:
+      - uploads:/app/uploads
+    networks:
+      - mental-health-network
+
+  # Frontend React App
+  frontend:
+    build: ./frontend
+    container_name: mental-health-frontend
+    restart: unless-stopped
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+      - ml-service
+    networks:
+      - mental-health-network
+
+  # ML Service with GNN
+  ml-service:
+    build: ./ml-service
+    container_name: mental-health-ml
+    restart: unless-stopped
+    environment:
+      ENVIRONMENT: production
+      PORT: 8001
+    ports:
+      - "8001:8001"
+    volumes:
+      - ml_models:/app/models
+    networks:
+      - mental-health-network
+
+volumes:
+  mongodb_data:
+  uploads:
+  ml_models:
+
+networks:
+  mental-health-network:
+    driver: bridge

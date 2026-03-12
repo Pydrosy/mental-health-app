@@ -1,0 +1,64 @@
+# Dependencies
+node_modules/
+*/node_modules/
+**/node_modules
+
+# Environment variables
+.env
+.env.local
+.env.production
+*.env
+
+# Build outputs
+dist/
+build/
+*.log
+
+# Backend specific
+backend/uploads/
+backend/package-lock.json
+backend/npm-debug.log*
+
+# Frontend specific
+frontend/build/
+frontend/package-lock.json
+frontend/.env.local
+
+# ML Service
+ml-service/__pycache__/
+ml-service/*.pyc
+ml-service/venv/
+ml-service/env/
+ml-service/models/
+ml-service/*.egg-info/
+
+# Docker
+*.pid
+*.sock
+*.pid.lock
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Testing
+coverage/
+.nyc_output/
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+*.temp

@@ -1,0 +1,152 @@
+const mongoose = require('mongoose');
+const bcrypt = require('bcryptjs');
+
+const userSchema = new mongoose.Schema({
+  email: {
+    type: String,
+    required: [true, 'Email is required'],
+    unique: true,
+    lowercase: true,
+    trim: true,
+    match: [/^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/, 'Please enter a valid email']
+  },
+  password: {
+    type: String,
+    required: [true, 'Password is required'],
+    minlength: [6, 'Password must be at least 6 characters'],
+    select: false
+  },
+  role: {
+    type: String,
+    enum: ['patient', 'therapist', 'admin'],
+    default: 'patient'
+  },
+  profile: {
+    firstName: {
+      type: String,
+      required: [true, 'First name is required'],
+      trim: true
+    },
+    lastName: {
+      type: String,
+      required: [true, 'Last name is required'],
+      trim: true
+    },
+    dateOfBirth: Date,
+    gender: {
+      type: String,
+      enum: ['male', 'female', 'other', 'prefer-not-to-say']
+    },
+    phoneNumber: String,
+    profilePicture: {
+      type: String,
+      default: 'default-avatar.png'
+    },
+    bio: String,
+    preferredLanguage: {
+      type: String,
+      default: 'English'
+    }
+  },
+  // Patient specific fields
+  patientDetails: {
+    concerns: [String],
+    therapyGoals: [String],
+    preferredTherapyType: [String],
+    insuranceProvider: String,
+    emergencyContact: {
+      name: String,
+      relationship: String,
+      phone: String
+    },
+    previousTherapy: Boolean
+  },
+  // Therapist specific fields
+  therapistDetails: {
+    specializations: [String],
+    licenseNumber: String,
+    licenseType: String,
+    licenseExpiry: Date,
+    yearsOfExperience: Number,
+    languages: [String],
+    sessionRate: Number,
+    acceptsInsurance: Boolean,
+    insuranceAccepted: [String],
+    availability: [{
+      day: String,
+      slots: [{
+        startTime: String,
+        endTime: String,
+        isBooked: Boolean
+      }]
+    }],
+    averageRating: {
+      type: Number,
+      default: 0
+    },
+    totalSessions: {
+      type: Number,
+      default: 0
+    },
+    isVerified: {
+      type: Boolean,
+      default: false
+    },
+    isAvailable: {
+      type: Boolean,
+      default: true
+    }
+  },
+  isEmailVerified: {
+    type: Boolean,
+    default: false
+  },
+  isActive: {
+    type: Boolean,
+    default: true
+  }
+}, {
+  timestamps: true
+});
+
+// FIXED pre-save hook - Using regular function, not async
+userSchema.pre('save', function(next) {
+  console.log('🔄 Pre-save hook running...');
+  
+  // If password is not modified, skip hashing
+  if (!this.isModified('password')) {
+    console.log('Password not modified, skipping hash');
+    return next();
+  }
+
+  console.log('Hashing password...');
+  
+  try {
+    // Generate salt
+    const salt = bcrypt.genSaltSync(10);
+    // Hash password
+    this.password = bcrypt.hashSync(this.password, salt);
+    console.log('✅ Password hashed successfully');
+    next();
+  } catch (error) {
+    console.error('❌ Error hashing password:', error);
+    next(error);
+  }
+});
+
+// Compare password method - keep as async
+userSchema.methods.comparePassword = async function(candidatePassword) {
+  try {
+    return await bcrypt.compare(candidatePassword, this.password);
+  } catch (error) {
+    throw error;
+  }
+};
+
+// Simple indexes
+userSchema.index({ email: 1 });
+userSchema.index({ role: 1 });
+
+const User = mongoose.model('User', userSchema);
+
+module.exports = User;

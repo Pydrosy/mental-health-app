@@ -1,0 +1,21 @@
+backend:
+  build: ./backend
+  container_name: mental-health-backend
+  restart: unless-stopped
+  environment:
+    NODE_ENV: production
+    PORT: 5000
+    MONGODB_URI: mongodb://${MONGO_ROOT_USER}:${MONGO_ROOT_PASSWORD}@mongodb:27018/mental-health?authSource=admin
+    JWT_SECRET: ${JWT_SECRET}
+    JWT_EXPIRE: 7d
+    FRONTEND_URL: ${FRONTEND_URL}
+    AGORA_APP_ID: ${AGORA_APP_ID}
+    AGORA_APP_CERTIFICATE: ${AGORA_APP_CERTIFICATE}
+  ports:
+    - "5000:5000"
+  depends_on:
+    - mongodb
+  volumes:
+    - uploads:/app/uploads
+  networks:
+    - mental-health-network
