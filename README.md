@@ -28,7 +28,7 @@
 <img src="docs/screenshots/video.png" alt="Video Call" width="400"/>
 </div>
 
-> **Note**: Add your screenshots to a `docs/screenshots/` folder
+> **Note**: l will add
 
 ## ✨ Key Features
 
