@@ -22,13 +22,12 @@
 ## 📸 Screenshots
 
 <div align="center">
-<img src="docs/screenshots/dashboard.png" alt="Dashboard" width="400"/>
-<img src="docs/screenshots/matching.png" alt="Therapist Matching" width="400"/>
-<img src="docs/screenshots/chat.png" alt="Chat" width="400"/>
-<img src="docs/screenshots/video.png" alt="Video Call" width="400"/>
+<img width="928" height="410" alt="mental h1" src="https://github.com/user-attachments/assets/e4d29295-8a00-4661-99c9-2a38cf965ef4" />
+<img width="917" height="404" alt="mental h2" src="https://github.com/user-attachments/assets/c1a94c7b-2b46-4727-96ac-4187cae31e32" />
+
 </div>
 
-> **Note**: l will add
+> **Note**: 
 
 ## ✨ Key Features
 
